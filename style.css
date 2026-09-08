@@ -2351,33 +2351,48 @@ body {
     align-items: center;
     width: 100%;
     margin-top: 0.8rem;
-    transition: all 0.25s ease;
+    position: relative;
 }
 
 .celeb-actions.swapped {
     flex-direction: row-reverse;
 }
 
-.celeb-close-btn {
-    flex: 1;
+.celeb-close-btn,
+.celeb-reject-btn {
+    flex: 1 1 0;
+    min-width: 0;
     padding: 0.85rem 1.2rem;
     font-size: 0.95rem;
     white-space: nowrap;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 999px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.celeb-close-btn {
+    background: linear-gradient(135deg, #0284c7 0%, #0284c7 30%, #0ea5e9 100%);
+    color: #ffffff;
+    border: 1px solid #38bdf8;
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.celeb-close-btn:hover {
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
+    transform: translateY(-2px);
 }
 
 .celeb-reject-btn {
-    flex: 1;
-    padding: 0.85rem 1.2rem;
-    font-size: 0.95rem;
-    white-space: nowrap;
-    background: rgba(15, 23, 42, 0.75);
+    background: rgba(15, 23, 42, 0.85);
     border: 1.5px solid rgba(56, 189, 248, 0.35);
     color: #bae6fd;
     box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
 }
 
 .celeb-reject-btn:hover {
@@ -2388,30 +2403,30 @@ body {
     transform: translateY(-2px);
 }
 
-.celeb-reject-btn:active {
-    transform: scale(0.96);
+.celeb-reject-btn:active,
+.celeb-close-btn:active {
+    transform: scale(0.95);
 }
 
-@keyframes wiggleReject {
-
-    0%,
-    100% {
-        transform: translateX(0);
+/* Elastic Pop Animation on Swap */
+@keyframes celebSwapBounce {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.8;
     }
-
-    20%,
     60% {
-        transform: translateX(-6px);
+        transform: scale(1.06);
+        opacity: 1;
     }
-
-    40%,
-    80% {
-        transform: translateX(6px);
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
 }
 
-.celeb-reject-btn.shaking {
-    animation: wiggleReject 0.35s ease-in-out;
+.celeb-actions.anim-swap .celeb-close-btn,
+.celeb-actions.anim-swap .celeb-reject-btn {
+    animation: celebSwapBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 

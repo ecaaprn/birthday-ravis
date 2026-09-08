@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         letter-spacing:0.5px;
                         box-shadow: 0 4px 20px rgba(56,189,248,0.4);
                         transition: transform 0.15s, box-shadow 0.15s;
-                    ">Coba Lagi🪼</button>
+                    ">Coba Lagi</button>
                 </div>
             `;
 
@@ -1049,15 +1049,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const celebRejectBtn = document.getElementById('celebRejectBtn');
     const celebActions = document.querySelector('.celeb-actions');
     let rejectCount = 0;
+    let isSurrendered = false;
+    let lastDodgeTime = 0;
     const initialRejectText = celebRejectBtn ? celebRejectBtn.textContent.trim() : 'Gamau';
+
+    function playDodgeBeep() {
+        try {
+            const ctx = window._audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+            window._audioCtx = ctx;
+            if (ctx.state === 'suspended') ctx.resume();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            const startF = 450 + Math.min(rejectCount * 30, 400);
+            osc.frequency.setValueAtTime(startF, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(startF + 250, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.1);
+        } catch (e) {
+            // fallback silent
+        }
+    }
 
     function resetCelebModal() {
         rejectCount = 0;
+        isSurrendered = false;
         if (celebActions) {
-            celebActions.classList.remove('swapped');
+            celebActions.classList.remove('swapped', 'anim-swap');
         }
         if (celebRejectBtn) {
-            celebRejectBtn.classList.remove('shaking');
             celebRejectBtn.textContent = initialRejectText;
         }
         const celebSub = document.querySelector('.celeb-sub');
@@ -1090,30 +1114,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const dodgeTeases = [
-        'Eits gabisa nolak yaa! Wajib ikut 😜',
-        'Masih mau nolak juga nih? Wlee 😝',
-        'Gabisa diklik kan? Haha 😛',
-        'Tombolnya lincah banget kan? 😂',
-        'Udah klik yang "Ayo" ajaa sayang 💙',
-        'Masih berusaha nolak ternyata 🥺',
-        'Pantang menyerah banget yaa kamu 😆',
-        'Gak bakal kena wlee 😜',
-        'Tetep gabisa nolak pokoknya! 😋'
+        'Eits gabisa nolak yaa, wajib ikut',
+        'Masih mau nolak juga nih?',
+        'Gabisa diklik kan? Hahaha',
+        'Tombolnya lincah banget yaa?',
+        'Udah klik "Ayo" aja sayang',
+        'Masih berusaha nolak ternyata',
+        'Pantang menyerah banget yaa kamu',
+        'Gak bakal kena wlee',
+        'Tetep gabisa nolak pokoknya!'
     ];
 
     if (celebRejectBtn) {
-        const handleDodge = () => {
+        const handleDodge = (e) => {
+            if (isSurrendered) return;
+
+            const now = Date.now();
+            if (now - lastDodgeTime < 180) return; // prevent rapid duplicate triggers
+            lastDodgeTime = now;
+
             rejectCount++;
-            if (celebActions) celebActions.classList.toggle('swapped');
-            celebRejectBtn.classList.remove('shaking');
-            void celebRejectBtn.offsetWidth; // reflow to retrigger animation
-            celebRejectBtn.classList.add('shaking');
+            playDodgeBeep();
+
+            if (celebActions) {
+                celebActions.classList.toggle('swapped');
+                celebActions.classList.remove('anim-swap');
+                void celebActions.offsetWidth; // force reflow
+                celebActions.classList.add('anim-swap');
+            }
 
             const celebSub = document.querySelector('.celeb-sub');
             if (celebSub) {
                 if (rejectCount >= 10) {
-                    celebRejectBtn.textContent = 'Mau dehh 😋';
-                    celebSub.textContent = 'Nah gitu dong, besok kita pergi mam! 🥰';
+                    isSurrendered = true;
+                    celebRejectBtn.textContent = 'Mau dehh';
+                    celebSub.textContent = 'Nah gitu dong, besok kita pergi mam, yaa';
                     celebSub.style.color = '#7dd3fc';
                 } else {
                     const tease = dodgeTeases[(rejectCount - 1) % dodgeTeases.length];
@@ -1123,21 +1158,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        // Desktop mouse hover
         celebRejectBtn.addEventListener('mouseenter', handleDodge);
-        celebRejectBtn.addEventListener('touchstart', (e) => {
-            if (rejectCount < 10 && !celebRejectBtn.textContent.toLowerCase().includes('mau')) {
-                e.preventDefault();
-                handleDodge();
-            }
-        }, { passive: false });
 
-        celebRejectBtn.addEventListener('click', () => {
-            if (rejectCount >= 10 || celebRejectBtn.textContent.toLowerCase().includes('mau')) {
+        // Mobile touch / pointer down
+        celebRejectBtn.addEventListener('pointerdown', (e) => {
+            if (!isSurrendered) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleDodge(e);
+            }
+        });
+
+        // Click handler (for surrender state or keyboard navigation)
+        celebRejectBtn.addEventListener('click', (e) => {
+            if (isSurrendered) {
                 fwActive = false;
                 if (fireworksOverlay) fireworksOverlay.classList.add('hidden');
                 resetCelebModal();
             } else {
-                handleDodge();
+                e.preventDefault();
+                e.stopPropagation();
+                handleDodge(e);
             }
         });
     }
