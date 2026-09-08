@@ -82,7 +82,7 @@ const CONFIG = {
         },
         {
             name: 'Daylight',
-            artist: 'David Kushner',
+            artist: 'Maroon 5',
             duration: '3:32',
             localFile: 'music/Daylight.mp3',
             youtubeUrl: 'https://youtu.be/ZxcGPnOcDSQ?si=oQB71GVVaZpmKX-m',
@@ -242,47 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const floatingMusicBtn = document.getElementById('floatingMusicBtn');
 
-    // Tooltip label untuk floating music button
-    const fabLabel = document.createElement('div');
-    fabLabel.id = 'fabSongLabel';
-    fabLabel.style.cssText = [
-        'position:fixed',
-        'bottom:88px',
-        'right:18px',
-        'background:rgba(10,21,38,0.92)',
-        'border:1px solid rgba(56,189,248,0.45)',
-        'border-radius:50px',
-        'padding:7px 16px',
-        'font-family:\'Plus Jakarta Sans\',sans-serif',
-        'font-size:0.78rem',
-        'color:#e2f0fb',
-        'white-space:nowrap',
-        'box-shadow:0 4px 20px rgba(0,0,0,0.4)',
-        'opacity:0',
-        'transform:translateY(8px)',
-        'transition:opacity 0.3s ease,transform 0.3s ease',
-        'pointer-events:none',
-        'z-index:9998'
-    ].join(';');
-    fabLabel.innerHTML = '🎶 Besok Kita Pergi Makan';
-    document.body.appendChild(fabLabel);
-
-    let fabLabelTimer = null;
-    function showFabLabel() {
-        if (!fabLabel) return;
-        fabLabel.style.opacity = '1';
-        fabLabel.style.transform = 'translateY(0)';
-        clearTimeout(fabLabelTimer);
-        fabLabelTimer = setTimeout(() => {
-            hideFabLabel();
-        }, 4000);
-    }
-    function hideFabLabel() {
-        if (!fabLabel) return;
-        fabLabel.style.opacity = '0';
-        fabLabel.style.transform = 'translateY(8px)';
-    }
-
     function playFabAudio() {
         if (isPlaying) return; // Jangan tumpuk jika Special Playlist sedang berputar
         getAudioContext();
@@ -291,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
             p.then(() => {
                 fabPlaying = true;
                 if (floatingMusicBtn) floatingMusicBtn.classList.add('playing');
-                showFabLabel();
             }).catch(() => {
                 fabPlaying = false;
                 // Jika browser memblokir sebelum interaksi, siapkan trigger pada interaksi pertama
@@ -300,7 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         fabAudio.play().then(() => {
                             fabPlaying = true;
                             if (floatingMusicBtn) floatingMusicBtn.classList.add('playing');
-                            showFabLabel();
                         }).catch(() => { });
                     }
                     ['click', 'touchstart', 'keydown', 'scroll', 'pointerdown'].forEach(evt => {
@@ -318,13 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
         fabPlaying = false;
         fabAudio.pause();
         if (floatingMusicBtn) floatingMusicBtn.classList.remove('playing');
-        hideFabLabel();
     }
 
     fabAudio.addEventListener('play', () => {
         fabPlaying = true;
         if (floatingMusicBtn) floatingMusicBtn.classList.add('playing');
-        showFabLabel();
     });
 
     fabAudio.addEventListener('pause', () => {
