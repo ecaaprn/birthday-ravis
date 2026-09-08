@@ -1118,11 +1118,11 @@ document.addEventListener('DOMContentLoaded', () => {
         'Masih mau nolak juga nih?',
         'Gabisa diklik kan? Hahaha',
         'Tombolnya lincah banget yaa?',
-        'Udah klik "Ayo" aja sayang',
         'Masih berusaha nolak ternyata',
         'Pantang menyerah banget yaa kamu',
         'Gak bakal kena wlee',
-        'Tetep gabisa nolak pokoknya!'
+        'Tetep gabisa nolak pokoknya!',
+        'Udah klik "Ayo" aja sayang'
     ];
 
     if (celebRejectBtn) {
