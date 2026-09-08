@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="midnight">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday Mas Sayang</title>
+    <meta name="description" content="A Special Birthday Website Created With Love">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Alex+Brush&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Background Canvas for Floating Stardust / Cosmic Particles -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- ===============================================================
+         1. LOADING SCREEN
+         =============================================================== -->
+    <div id="loading-screen" class="screen-overlay">
+        <div class="loading-container">
+            <div class="loading-flower-glow">
+                <svg viewBox="0 0 120 120" class="loading-svg" xmlns="http://www.w3.org/2000/svg">
+                    <g class="flower-group" transform="translate(60,60)">
+                        <ellipse class="petal-svg p1" cx="0" cy="-22" rx="9" ry="18" fill="rgba(56,189,248,0.85)" />
+                        <ellipse class="petal-svg p2" cx="16" cy="-16" rx="9" ry="18" fill="rgba(125,211,252,0.75)"
+                            transform="rotate(45)" />
+                        <ellipse class="petal-svg p3" cx="22" cy="0" rx="9" ry="18" fill="rgba(56,189,248,0.85)"
+                            transform="rotate(90)" />
+                        <ellipse class="petal-svg p4" cx="16" cy="16" rx="9" ry="18" fill="rgba(125,211,252,0.75)"
+                            transform="rotate(135)" />
+                        <ellipse class="petal-svg p5" cx="0" cy="22" rx="9" ry="18" fill="rgba(56,189,248,0.85)"
+                            transform="rotate(180)" />
+                        <ellipse class="petal-svg p6" cx="-16" cy="16" rx="9" ry="18" fill="rgba(125,211,252,0.75)"
+                            transform="rotate(225)" />
+                        <ellipse class="petal-svg p7" cx="-22" cy="0" rx="9" ry="18" fill="rgba(56,189,248,0.85)"
+                            transform="rotate(270)" />
+                        <ellipse class="petal-svg p8" cx="-16" cy="-16" rx="9" ry="18" fill="rgba(125,211,252,0.75)"
+                            transform="rotate(315)" />
+                        <circle cx="0" cy="0" r="10" fill="#e0f2fe" />
+                    </g>
+                </svg>
+            </div>
+            <p class="loading-text">Preparing something special for you</p>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===============================================================
+         2. PIN PASSCODE SCREEN
+         =============================================================== -->
+    <div id="pin-screen" class="screen-overlay hidden">
+        <div class="pin-card">
+            <div class="pin-icon-header">
+                <span class="pin-sparkle">✦</span>
+                <div class="pin-emblem">🪼</div>
+                <span class="pin-sparkle">✦</span>
+            </div>
+
+            <h1 class="pin-title">For You</h1>
+            <p class="pin-subtitle">Enter our secret code to open</p>
+
+            <!-- 6 PIN Dots Display -->
+            <div class="pin-display" id="pinDisplay">
+                <div class="pin-dot" id="dot-0"></div>
+                <div class="pin-dot" id="dot-1"></div>
+                <div class="pin-dot" id="dot-2"></div>
+                <div class="pin-dot" id="dot-3"></div>
+                <div class="pin-dot" id="dot-4"></div>
+                <div class="pin-dot" id="dot-5"></div>
+            </div>
+
+            <!-- Keypad -->
+            <div class="pin-keypad">
+                <button class="pin-key" data-digit="1">1</button>
+                <button class="pin-key" data-digit="2">2</button>
+                <button class="pin-key" data-digit="3">3</button>
+                <button class="pin-key" data-digit="4">4</button>
+                <button class="pin-key" data-digit="5">5</button>
+                <button class="pin-key" data-digit="6">6</button>
+                <button class="pin-key" data-digit="7">7</button>
+                <button class="pin-key" data-digit="8">8</button>
+                <button class="pin-key" data-digit="9">9</button>
+                <button class="pin-key key-action" id="pinClearBtn" aria-label="Hapus digit">✕</button>
+                <button class="pin-key" data-digit="0">0</button>
+                <button class="pin-key key-action key-submit" id="pinSubmitBtn" aria-label="Buka kode">↩</button>
+            </div>
+
+            <p class="pin-hint">💡 Hint: Tanggal spesial</p>
+            <p class="pin-error hidden" id="pinError">Kode kurang tepat, coba lagi ya✨</p>
+        </div>
+    </div>
+
+
+    <!-- ===============================================================
+         3. 3D GIFT BOX SCREEN
+         =============================================================== -->
+    <div id="giftbox-screen" class="screen-overlay hidden">
+        <div class="gift-glow-backdrop"></div>
+        <div class="gift-instruction fade-in">
+            <span class="gift-tag">✦ A SPECIAL SURPRISE ✦</span>
+            <h2>Tap the gift box to open it🎁</h2>
+            <p>Ada kejutan yang nungguin kamu di dalam box ini</p>
+        </div>
+
+        <div class="giftbox-container" id="giftboxContainer">
+            <div class="giftbox-3d" id="giftbox">
+                <!-- Gift Lid -->
+                <div class="gift-lid" id="giftLid">
+                    <div class="lid-top">
+                        <div class="lid-ribbon-cross-h"></div>
+                        <div class="lid-ribbon-cross-v"></div>
+                        <!-- Ribbon Bow -->
+                        <div class="gift-bow">
+                            <div class="bow-loop bow-left"></div>
+                            <div class="bow-loop bow-right"></div>
+                            <div class="bow-knot"></div>
+                        </div>
+                    </div>
+                    <div class="lid-rim rim-front"></div>
+                    <div class="lid-rim rim-back"></div>
+                    <div class="lid-rim rim-left"></div>
+                    <div class="lid-rim rim-right"></div>
+                </div>
+
+                <!-- Gift Body -->
+                <div class="gift-body">
+                    <div class="body-face face-front">
+                        <div class="face-ribbon-v"></div>
+                    </div>
+                    <div class="body-face face-back">
+                        <div class="face-ribbon-v"></div>
+                    </div>
+                    <div class="body-face face-left">
+                        <div class="face-ribbon-h"></div>
+                    </div>
+                    <div class="body-face face-right">
+                        <div class="face-ribbon-h"></div>
+                    </div>
+                    <div class="gift-inner-glow" id="giftInnerGlow"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gift-light-rays" id="giftRays"></div>
+    </div>
+
+
+    <!-- ===============================================================
+         4. MAIN CONTENT CONTAINER (MOBILE PHONE CONTAINER)
+         =============================================================== -->
+    <div id="main-content" class="mobile-wrapper hidden">
+
+        <!-- Ambient Scroll Progress Bar -->
+        <div id="scrollProgressBar" class="scroll-progress-bar"></div>
+
+        <!-- ==================== SECTION 1: HERO ==================== -->
+        <section id="hero" class="section hero-section">
+            <div class="hero-inner">
+                <div class="hero-badge fade-up">
+                    <span class="spark-icon">✦</span>
+                    <span class="badge-text">Your Special Day</span>
+                    <span class="spark-icon">✦</span>
+                </div>
+
+                <h1 class="hero-title fade-up delay-1">
+                    Happy<br>
+                    <span class="script-highlight">Birthday</span><br>
+                    <span class="name-highlight" id="heroName">Special One</span>
+                </h1>
+
+                <!-- Typewriter Dynamic Text -->
+                <div class="typewriter-box fade-up delay-2">
+                    <span id="heroTypewriter" class="typewriter-text"></span>
+                    <span class="typewriter-cursor">|</span>
+                </div>
+
+                <div class="hero-divider fade-up delay-2"></div>
+
+                <p class="hero-date-badge fade-up delay-3">
+                    <span class="date-icon">🗓️</span>
+                    <span id="heroDate">06 Oktober 2026 · The Most Special Day</span>
+                </p>
+
+                <div class="hero-body fade-up delay-3">
+                    <p class="hero-message">
+                        Kamu layak dapetin cinta yang tulus dan kebahagiaan yang ga ada habisnya.
+                        Grateful every single day to have you, mas.
+                    </p>
+                    <p class="hero-signature">
+                        <span class="sign-dash">—</span> With love, ecaa <span class="heart-icon">🐙</span> <span
+                            class="sign-dash">—</span>
+                    </p>
+                </div>
+
+                <!-- Scroll Prompt -->
+                <div class="scroll-prompt fade-up delay-4">
+                    <span class="scroll-text">Scroll Down</span>
+                    <div class="scroll-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== SECTION 2: DIGITAL BOUQUET ==================== -->
+        <section id="bouquet" class="section bouquet-section">
+            <div class="section-header fade-up">
+                <span class="section-tag">— ✦ MY FIRST GIFT ✦ —</span>
+                <h2 class="section-title">A Digital Bouquet</h2>
+                <p class="section-subtitle">Setiap bunga menyimpan pesan manis khusus buat kamu. Sentuh bunganya💐</p>
+            </div>
+
+            <div class="bouquet-stage fade-up delay-1">
+                <div class="bouquet-glow-ambient"></div>
+
+                <!-- Interactive Bouquet Arrangement -->
+                <div class="bouquet-flowers-wrap" id="bouquetFlowers">
+                    <!-- Dynamic Flowers injected by JS -->
+                </div>
+
+                <!-- Stems SVG Graphic -->
+                <div class="bouquet-stems-wrap">
+                    <svg class="bouquet-stems-svg" viewBox="0 0 100 290" preserveAspectRatio="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <!-- Upper Stems to All 7 Flowers (reaching deep behind each blossom) -->
+                        <!-- 1. Center Stem to 🌸 (50, 50) -->
+                        <path d="M 50 225 L 50 50" stroke="#38bdf8" stroke-width="3.2" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="1" />
+                        <!-- 2. Upper Left Stem to 🌺 (25, 65) -->
+                        <path d="M 50 225 C 48 165, 30 115, 25 65" stroke="#0ea5e9" stroke-width="2.8" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.95" />
+                        <!-- 3. Upper Right Stem to 🌷 (75, 65) -->
+                        <path d="M 50 225 C 52 165, 70 115, 75 65" stroke="#0ea5e9" stroke-width="2.8" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.95" />
+                        <!-- 4. Far Left Stem to 🌼 (11, 100) -->
+                        <path d="M 50 225 C 44 185, 20 145, 11 100" stroke="#38bdf8" stroke-width="2.6" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.9" />
+                        <!-- 5. Far Right Stem to 🌹 (89, 100) -->
+                        <path d="M 50 225 C 56 185, 80 145, 89 100" stroke="#38bdf8" stroke-width="2.6" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.9" />
+                        <!-- 6. Inner Left Stem to 🌻 (35, 130) -->
+                        <path d="M 50 225 C 48 190, 39 165, 35 130" stroke="#00d2ff" stroke-width="2.8" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.95" />
+                        <!-- 7. Inner Right Stem to 💐 (65, 130) -->
+                        <path d="M 50 225 C 52 190, 61 165, 65 130" stroke="#00d2ff" stroke-width="2.8" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.95" />
+
+                        <!-- Decorative Stem Leaves -->
+                        <path d="M 48 185 C 43 178, 38 174, 34 175 C 36 182, 42 186, 48 185 Z" fill="#0284c7"
+                            opacity="0.75" />
+                        <path d="M 52 185 C 57 178, 62 174, 66 175 C 64 182, 58 186, 52 185 Z" fill="#0284c7"
+                            opacity="0.75" />
+                        <path d="M 44 155 C 39 148, 34 145, 30 146 C 32 152, 38 156, 44 155 Z" fill="#38bdf8"
+                            opacity="0.65" />
+                        <path d="M 56 155 C 61 148, 66 145, 70 146 C 68 152, 62 156, 56 155 Z" fill="#38bdf8"
+                            opacity="0.65" />
+
+                        <!-- Bottom Stems (Extending Below Knot) -->
+                        <path d="M 50 225 C 49 238, 46 250, 43 260" stroke="#0ea5e9" stroke-width="2.6" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.85" />
+                        <path d="M 50 225 L 50 264" stroke="#38bdf8" stroke-width="3" fill="none" stroke-linecap="round"
+                            vector-effect="non-scaling-stroke" opacity="0.95" />
+                        <path d="M 50 225 C 51 238, 54 250, 57 260" stroke="#0ea5e9" stroke-width="2.6" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.85" />
+                        <path d="M 50 225 C 48 236, 43 246, 38 254" stroke="#00d2ff" stroke-width="2.2" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.75" />
+                        <path d="M 50 225 C 52 236, 57 246, 62 254" stroke="#00d2ff" stroke-width="2.2" fill="none"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" opacity="0.75" />
+                    </svg>
+                </div>
+
+                <!-- Ribbon Knot -->
+                <div class="bouquet-ribbon-knot">
+                    <div class="knot-center">🪷</div>
+                </div>
+            </div>
+
+            <!-- Active Bouquet Flower Message Card -->
+            <div class="bouquet-card-box glass-card fade-up delay-2" id="bouquetMessageCard">
+                <div class="card-flower-badge" id="bouquetCardEmoji">🪷</div>
+                <p class="bouquet-card-text" id="bouquetCardText">Sentuh salah satu bunga di atas untuk membaca pesannya
+                </p>
+            </div>
+        </section>
+
+
+        <!-- ==================== SECTION 3: A LETTER FOR YOU ==================== -->
+        <section id="letter" class="section letter-section">
+            <div class="section-header fade-up">
+                <span class="section-tag">— ✦ FROM MY HEART ✦ —</span>
+                <h2 class="section-title">A Letter For You</h2>
+                <p class="section-subtitle">Lewat surat kecil ini, aku mau sampaikan semua yang aku rasain</p>
+            </div>
+
+            <div class="letter-container fade-up delay-1">
+                <div class="letter-card" id="letterCard">
+                    <!-- Ornamental Corner Accents -->
+                    <div class="letter-corner c-tl">✦</div>
+                    <div class="letter-corner c-tr">✦</div>
+                    <div class="letter-corner c-bl">✦</div>
+                    <div class="letter-corner c-br">✦</div>
+
+                    <div class="letter-header">
+                        <div class="letter-floral-deco">✧ · 🪼 · ✧</div>
+                        <p class="letter-date" id="letterDateDisplay">Special Birthday Edition</p>
+                    </div>
+
+                    <div class="letter-body">
+                        <p class="letter-salutation">Hai sayang,</p>
+
+                        <p class="letter-para">
+                            Di hari ulang tahun kamu ini, aku cuma mau bilang aku bersyukur banget bisa kenal kamu.
+                            Setiap hari yang aku lewatin bareng kamu selalu punya cerita yang bikin aku senyum sendiri.
+                        </p>
+
+                        <p class="letter-para">
+                            Senyum kamu, ketawa kamu, sampai kebaikan hati kamu selalu punya cara sendiri buat bikin
+                            suasana jadi lebih hangat.
+                            Aku ga pernah nyangka bisa seberuntung ini punya kamu di hidup aku.
+                        </p>
+
+                        <p class="letter-para">
+                            Makasih yaa udah selalu sabar ngadepin aku, walaupun aku sering ngomelin kamu mulu.
+                            Hal-hal kecil yang kamu lakuin selalu berhasil bikin aku ngerasa tenang.
+                        </p>
+
+                        <p class="letter-para">
+                            Di usia kamu yang baru ini, aku berharap segala langkah kamu dimudahkan, semua impian kamu
+                            tercapai satu demi satu, dan kebahagiaan ga pernah berhenti menyapa kamu setiap hari.
+                        </p>
+
+                        <div class="letter-ps">
+                            <p class="letter-ps-text">P.S. Apapun yang terjadi ke depannya, aku akan tetap ada di
+                                samping kamu.
+                                Selamat bertambah usia, mas sayang.</p>
+                        </div>
+                    </div>
+
+                    <div class="letter-signature-wrap">
+                        <p class="letter-closing">With all my love & gratitude,</p>
+                        <p class="letter-sig-name">For Someone Special</p>
+
+                        <!-- Blue Wax Seal Stamp -->
+                        <div class="letter-wax-seal">
+                            <span class="seal-inner">✦ 🪼 ✦</span>
+                        </div>
+                    </div>
+
+                    <div class="letter-footer-border">
+                        <span>✧ ✧ ✧</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== SECTION 4: PHOTO MEMORIES (POLAROID) ==================== -->
+        <section id="memories" class="section memories-section">
+            <div class="section-header fade-up">
+                <span class="section-tag">— ✦ SWEET MOMENTS ✦ —</span>
+                <h2 class="section-title">Our Photo Memories</h2>
+                <p class="section-subtitle">Setiap foto ini nyimpen kenangan yang gak akan pernah aku lupain.
+                    Klik buat liat lebih jelas📸</p>
+            </div>
+
+            <div class="polaroid-grid" id="polaroidGrid">
+                <!-- Polaroid Cards injected by JS -->
+            </div>
+
+            <!-- Polaroid Lightbox Modal -->
+            <div class="photo-lightbox hidden" id="photoLightbox">
+                <div class="lightbox-overlay" id="lightboxBackdrop"></div>
+                <div class="lightbox-container">
+                    <button class="lightbox-close" id="lightboxCloseBtn" aria-label="Tutup preview">✕</button>
+                    <div class="lightbox-card">
+                        <div class="lightbox-img-wrap" id="lightboxImgWrap">
+                            <!-- Injected by JS -->
+                        </div>
+                        <p class="lightbox-caption" id="lightboxCaption">Caption Momen</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== SECTION 5: MEMORIES TIMELINE ==================== -->
+        <section id="timeline" class="section timeline-section">
+            <div class="section-header fade-up">
+                <span class="section-tag">— ✦ OUR JOURNEY ✦ —</span>
+                <h2 class="section-title">Memories We've Written Together</h2>
+                <p class="section-subtitle">Sebagian kecil dari momen-momen yang pernah kita lalui bareng</p>
+            </div>
+
+            <div class="timeline-wrapper">
+                <div class="timeline-line"></div>
+
+                <div class="timeline-row fade-up delay-1">
+                    <div class="timeline-pin">
+                        <div class="pin-halo"></div>
+                        <div class="pin-core"></div>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="card-meta">
+                            <span class="card-icon">✨</span>
+                            <span class="card-tag">THE VERY BEGINNING</span>
+                        </div>
+                        <h3 class="card-title">First Time We Met</h3>
+                        <p class="card-text">Ketemu pertama kali bulan Desember, waktu itu ditugasin buat ngerjain
+                            project bareng.
+                            Waktu itu belum kepikiran bakal jadi sedeket ini, masih sebatas kerja bareng aja.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-row fade-up delay-2">
+                    <div class="timeline-pin">
+                        <div class="pin-halo"></div>
+                        <div class="pin-core"></div>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="card-meta">
+                            <span class="card-icon">💬</span>
+                            <span class="card-tag">A MAGICAL MOMENT</span>
+                        </div>
+                        <h3 class="card-title">Our First Conversation</h3>
+                        <p class="card-text">Waktu itu aku lagi sakit, kamu nanya ada makanan di kost atau engga, terus
+                            dianterin makan.
+                            Kayaknya semenjak itu hubungan kita jadi makin intens.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-row fade-up delay-3">
+                    <div class="timeline-pin">
+                        <div class="pin-halo"></div>
+                        <div class="pin-core"></div>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="card-meta">
+                            <span class="card-icon">🌿</span>
+                            <span class="card-tag">A BEAUTIFUL MEMORY</span>
+                        </div>
+                        <h3 class="card-title">The Late Night Talks</h3>
+                        <p class="card-text">Danau Sunter waktu bulan Maret, ngobrol panjang sambil cerita keluh kesah
+                            masing-masing.
+                            Dari situ juga kita ngerasa udah deket banget satu sama lain.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-row fade-up delay-4">
+                    <div class="timeline-pin">
+                        <div class="pin-halo"></div>
+                        <div class="pin-core"></div>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="card-meta">
+                            <span class="card-icon">🎂</span>
+                            <span class="card-tag">TODAY & FOREVER</span>
+                        </div>
+                        <h3 class="card-title">Your Special Birthday</h3>
+                        <p class="card-text">Hari ini jadi tahun pertama aku ngerayain ulang tahun kamu. Sukses terus,
+                            sehat selalu, dan
+                            semua rencana kamu berjalan lancar, sayang. Aku mau terus bisa ngerayain hari spesial ini
+                            bareng kamu di tahun-tahun berikutnya.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== SECTION 6: SPECIAL PLAYLIST ==================== -->
+        <section id="playlist" class="section playlist-section">
+            <div class="section-header fade-up">
+                <span class="section-tag">— ✦ OUR SONGS ✦ —</span>
+                <h2 class="section-title">Special Playlist</h2>
+                <p class="section-subtitle">Lagu-lagu yang selalu mengingatkanku padamu</p>
+            </div>
+
+            <div class="player-card fade-up delay-1">
+                <!-- Vinyl Disc Artwork -->
+                <div class="vinyl-holder">
+                    <div class="vinyl-disc" id="vinylDisc">
+                        <div class="vinyl-groove-rings"></div>
+                        <div class="vinyl-label-center">
+                            <div class="vinyl-spindle"></div>
+                        </div>
+                        <div class="vinyl-light-reflection"></div>
+                        <div class="vinyl-sparkle-icon">✦</div>
+                    </div>
+                </div>
+
+                <!-- Current Song Details -->
+                <div class="song-meta">
+                    <h3 class="song-title" id="songTitle">Shape Of My Heart</h3>
+                    <p class="song-artist" id="songArtist">Backstreet Boys</p>
+                </div>
+
+                <!-- Progress Bar Slider -->
+                <div class="scrub-container">
+                    <div class="scrub-bar" id="scrubBar">
+                        <div class="scrub-fill" id="scrubFill"></div>
+                        <div class="scrub-thumb" id="scrubThumb"></div>
+                    </div>
+                    <div class="scrub-timers">
+                        <span id="currTime">0:00</span>
+                        <span id="durTime">3:50</span>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="audio-controls">
+                    <button class="ctrl-btn" id="btnPrev" aria-label="Previous Song">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn play-circle-btn" id="btnPlay" aria-label="Play or Pause">
+                        <svg class="icon-play" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <svg class="icon-pause hidden" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn" id="btnNext" aria-label="Next Song">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
+                        </svg>
+                </div>
+
+                <!-- Song List -->
+                <div class="playlist-items" id="playlistItems">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== SECTION 7: THE REASONS JAR ==================== -->
+        <section id="jar" class="section jar-section">
+            <div class="section-header fade-up">
+                <span class="section-tag">— ✦ FROM MY HEART TO YOURS ✦ —</span>
+                <h2 class="section-title">Reasons I'm Grateful to Know You</h2>
+                <p class="section-subtitle">Kocok toples dan ambil gulungan pesan🫙</p>
+            </div>
+
+            <div class="jar-wrapper fade-up delay-1">
+                <div class="glass-jar" id="glassJar" role="button" aria-label="Kocok toples untuk mengambil pesan">
+                    <div class="jar-lid"></div>
+                    <div class="jar-neck"></div>
+                    <div class="jar-body">
+                        <div class="jar-specular"></div>
+                        <div class="jar-folded-note fn-1"></div>
+                        <div class="jar-folded-note fn-2"></div>
+                        <div class="jar-folded-note fn-3"></div>
+                        <div class="jar-folded-note fn-4"></div>
+                        <div class="jar-folded-note fn-5"></div>
+                        <div class="jar-folded-note fn-6"></div>
+                        <div class="jar-stardust">✦</div>
+                    </div>
+                </div>
+
+                <button id="shakeJarBtn" class="pill-btn shake-btn">
+                    <span class="btn-icon">🫙</span>
+                    <span>Shake the Jar</span>
+                </button>
+            </div>
+
+            <!-- Pop-up Stationery Note Modal -->
+            <div class="note-modal hidden" id="noteModal">
+                <div class="note-card-stationery" id="noteCard">
+                    <button class="close-modal-btn" id="closeNoteBtn" aria-label="Tutup pesan">&times;</button>
+                    <div class="stationery-header">
+                        <span class="note-num" id="noteNum">#1</span>
+                    </div>
+                    <div class="stationery-lines">
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <p class="note-quote" id="noteQuote">
+                        Kehadiranmu saja sudah cukup untuk membuat suasana menjadi jauh lebih cerah dan menyenangkan.
+                    </p>
+                    <div class="stationery-footer">
+                        <span class="stationery-heart">🪼</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ==================== SECTION 8: FINAL WISH & CELEBRATION ==================== -->
+        <section id="final-wish" class="section final-section">
+            <div class="final-inner fade-up">
+                <div class="hero-badge">
+                    <span class="spark-icon">✦</span>
+                    <span class="badge-text">With All My Heart</span>
+                    <span class="spark-icon">✦</span>
+                </div>
+
+                <h2 class="final-title">
+                    May your life<br>
+                    <span class="script-highlight">always be filled</span><br>
+                    with light & joy
+                </h2>
+
+                <p class="final-body">
+                    Selamat bertambah usia! Langkah kamu ke depan makin dimudahkan dan hati kamu selalu tenang
+                    menghadapi apapun.
+                    Kamu orang baik, dan aku yakin hal-hal baik juga bakal terus dateng ke kamu.
+                </p>
+
+                <div class="final-celebrate-btn-wrap">
+                    <button class="pill-btn celebrate-btn" id="celebrateBtn">
+                        <span>🎂Let's Celebrate Your Birthday🎂</span>
+                    </button>
+                </div>
+
+                <p class="final-signature">
+                    <span class="sign-dash">—</span> With love that never runs out <span class="heart-icon">🪼</span>
+                    <span class="sign-dash">—</span>
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer-wrap">
+            <p class="footer-note">Made with love & gratitude for you</p>
+            <p class="footer-sub">Happy Birthday, Sayang🪼</p>
+        </footer>
+
+    </div> <!-- /mobile-wrapper -->
+
+
+    <!-- ===============================================================
+         5. FIREWORKS & CELEBRATION MODAL OVERLAY
+         =============================================================== -->
+    <div id="fireworks-overlay" class="hidden">
+        <canvas id="fireworksCanvas"></canvas>
+        <div class="celebration-modal" id="celebrationModal">
+            <div class="celeb-cake">🎂</div>
+            <h2 class="celeb-title">Serta mulia ya sayang</h2>
+            <p class="celeb-sub">Besok pergi mam sama aku, yuk</p>
+            <div class="celeb-actions">
+                <button class="pill-btn celeb-close-btn" id="celebCloseBtn">Ayoo</button>
+                <button class="pill-btn celeb-reject-btn" id="celebRejectBtn">Gamau</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ===============================================================
+         6. FLOATING MINI MUSIC PLAYER (BOTTOM RIGHT)
+         =============================================================== -->
+    <button id="floatingMusicBtn" class="floating-music-btn" aria-label="Toggle audio playback">
+        <div class="equalizer-waves">
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="music-icon-fallback">🎵</div>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
