@@ -81,12 +81,12 @@ const CONFIG = {
             youtubeId: 'nYrEL9ecAWA'
         },
         {
-            name: 'Daylight',
-            artist: 'Maroon 5',
-            duration: '3:32',
-            localFile: 'music/Daylight.mp3',
-            youtubeUrl: 'https://youtu.be/ZxcGPnOcDSQ?si=oQB71GVVaZpmKX-m',
-            youtubeId: 'ZxcGPnOcDSQ'
+            name: 'The Night We Met',
+            artist: 'Lord Huron',
+            duration: '3:28',
+            localFile: 'music/The_Night_We_Met.mp3',
+            youtubeUrl: 'https://youtu.be/wAFRmiY_h64?si=TheNightWeMet',
+            youtubeId: 'wAFRmiY_h64'
         },
         {
             name: 'I Wanna Be Yours',
@@ -1078,6 +1078,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetCelebModal() {
         rejectCount = 0;
         isSurrendered = false;
+        if (typeof stopContinuousDodge === 'function') stopContinuousDodge();
         if (celebActions) {
             celebActions.classList.remove('swapped', 'anim-swap');
         }
@@ -1158,21 +1159,64 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        let holdInterval = null;
+
+        const stopContinuousDodge = () => {
+            if (holdInterval) {
+                clearInterval(holdInterval);
+                holdInterval = null;
+            }
+        };
+
+        const startContinuousDodge = () => {
+            stopContinuousDodge();
+            if (isSurrendered) return;
+            holdInterval = setInterval(() => {
+                if (!isSurrendered) {
+                    handleDodge();
+                } else {
+                    stopContinuousDodge();
+                }
+            }, 120);
+        };
+
+        const triggerDodgeAndHold = (e) => {
+            if (!isSurrendered) {
+                if (e && e.cancelable) e.preventDefault();
+                if (e) e.stopPropagation();
+                handleDodge(e);
+                startContinuousDodge();
+            }
+        };
+
         // Desktop mouse hover
         celebRejectBtn.addEventListener('mouseenter', handleDodge);
+        celebRejectBtn.addEventListener('pointerenter', handleDodge);
 
-        // Mobile touch / pointer down
-        celebRejectBtn.addEventListener('pointerdown', (e) => {
-            if (!isSurrendered) {
-                e.preventDefault();
-                e.stopPropagation();
-                handleDodge(e);
-            }
+        // Mobile touch & long-press handling
+        celebRejectBtn.addEventListener('touchstart', triggerDodgeAndHold, { passive: false });
+        celebRejectBtn.addEventListener('touchmove', triggerDodgeAndHold, { passive: false });
+        celebRejectBtn.addEventListener('pointerdown', triggerDodgeAndHold);
+        celebRejectBtn.addEventListener('pointermove', (e) => {
+            if (e.buttons > 0) triggerDodgeAndHold(e);
+        });
+
+        // Release / cancel touch holding
+        ['touchend', 'touchcancel', 'pointerup', 'pointercancel', 'pointerleave', 'mouseleave'].forEach((evt) => {
+            celebRejectBtn.addEventListener(evt, stopContinuousDodge);
+        });
+
+        // Prevent native mobile long-press context menu
+        celebRejectBtn.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!isSurrendered) handleDodge(e);
         });
 
         // Click handler (for surrender state or keyboard navigation)
         celebRejectBtn.addEventListener('click', (e) => {
             if (isSurrendered) {
+                stopContinuousDodge();
                 fwActive = false;
                 if (fireworksOverlay) fireworksOverlay.classList.add('hidden');
                 resetCelebModal();

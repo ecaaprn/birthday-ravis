@@ -291,7 +291,7 @@ body {
     font-weight: 600;
     color: var(--text-primary);
     letter-spacing: 0.02em;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.6rem;
 }
 
 .pin-subtitle {
@@ -382,9 +382,11 @@ body {
 }
 
 .pin-hint {
-    font-size: 0.8rem;
+    font-size: 0.83rem;
     color: var(--text-tertiary);
     line-height: 1.4;
+    margin-top: 0;
+    margin-bottom: 0.6rem;
 }
 
 .pin-hint strong {
@@ -2393,6 +2395,10 @@ body {
     box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
     font-weight: 600;
     cursor: pointer;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .celeb-reject-btn:hover {
